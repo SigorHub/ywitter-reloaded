@@ -1,4 +1,4 @@
-import { GithubAuthProvider, signInWithPopup, signInWithRedirect } from "firebase/auth";
+import { GithubAuthProvider, TwitterAuthProvider, signInWithPopup, signInWithRedirect } from "firebase/auth";
 import styled from "styled-components"
 import { auth } from "../routes/firebase";
 import { useNavigate } from "react-router-dom";
@@ -17,6 +17,7 @@ const Button = styled.span`
     align-items: center;
     justify-content: center;
     cursor: pointer;
+    &:hover{opacity:0.8;}
 `;
 
 const Logo = styled.img`
@@ -29,6 +30,8 @@ export default function GithubButton(){
     // 깃허브 provide
     const onClick = async() => {
         try {
+            // const tp = new TwitterAuthProvider();
+
             const provider = new GithubAuthProvider();
             // 리디렉션 로그인
             // await signInWithRedirect(auth, provider);

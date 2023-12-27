@@ -5,6 +5,7 @@ export default function Home(){
     const logOut = () => {
         // 로그아웃
         auth.signOut();
+        location.reload();
     }
 
     return (

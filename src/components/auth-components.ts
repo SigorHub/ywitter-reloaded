@@ -45,5 +45,8 @@ export const Swither = styled.span`
     margin-top: 20px;
     a {
         color: #1d9bf0;
+        &:hover {
+            opacity: 0.8;
+        }
     }
 `;
