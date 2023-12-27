@@ -1,48 +1,10 @@
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { useState } from "react";
-import styled from "styled-components"
 import { auth } from "./routes/firebase";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { FirebaseError } from "firebase/app";
+import { Error, Input, Swither, Title, Wrapper, Form } from "./components/auth-components";
 
-const Wrapper = styled.div`
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 420px;
-    padding: 50px 0px;
-`;
-
-const Title = styled.h1`
-    font-size: 42px;
-`;
-
-const Form = styled.form`
-    margin-top: 50px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    width: 100%;
-`;
-
-const Input = styled.input`
-    padding: 10px 20px;
-    border-radius: 50px;
-    border: none;
-    width: 100%;
-    font-size: 16px;
-    &[type="submit"] {
-        cursor:pointer;
-        &:hover {
-            opacity: 0.8;
-        }
-    }
-`;
-
-const Error = styled.span`
-    font-weight: 600;
-    color: tomato;
-`;
 
 export default function CreateAccount(){
 
@@ -65,22 +27,27 @@ export default function CreateAccount(){
     };
     const onSubmit =async (e : React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        setError("");
+
         if(isLoading || name === "" || email === "" || password ==="") return;
         try{
-            // Click to show as login
+            // Click to show as loading
             setLoading(true);
             // create an account
             // set the name of the user
             // redirect to the home page
             const credentials = await createUserWithEmailAndPassword(auth, email, password);
-            console.log(credentials.user);
 
             await updateProfile(credentials.user, {
                 displayName: name,
             });
             navigate("/");
         }catch(e){
-            // setError
+            if(e instanceof FirebaseError){
+                // Firebase 에러 콘솔 출력
+                console.log(e.code, e.message);
+                setError(e.message);
+            }
         }finally{
             setLoading(false);
         }
@@ -96,5 +63,8 @@ export default function CreateAccount(){
             <Input type="submit"    value={isLoading ? "Loading..." : "생성하다 계정"}/>
         </Form>
         {error !== "" ? <Error>{error}</Error> : null}
+        <Swither>
+            이미 가지고있다 계정을? <Link to="/login">로그인 하나 &rarr;</Link>
+        </Swither>
     </Wrapper>
 }
