@@ -8,6 +8,7 @@ import { createGlobalStyle } from "styled-components";
 import reset from "styled-reset";
 import { useEffect, useState } from "react";
 import LoadingScreen from "./components/loading-screen";
+import { auth } from "./routes/firebase";
 
 
 const router = createBrowserRouter([
@@ -54,6 +55,7 @@ function App() {
   const init = async() => {
     // wait for firebase
     // setTimeout(() => setLoading(false), 2000);
+    await auth.authStateReady();
     setLoading(false);
   };
   useEffect(()=> {
