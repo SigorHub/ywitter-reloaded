@@ -1,16 +1,12 @@
-import { auth } from "./firebase";
+import styled from "styled-components";
+import PostYweetForm from "../components/post-yweet-form";
+
+const Wrapper = styled.div``;
 
 export default function Home(){
-
-    const logOut = () => {
-        // 로그아웃
-        auth.signOut();
-        location.reload();
-    }
-
     return (
-    <h1>
-        <button onClick={logOut}>Log Out</button>
-    </h1>
+    <Wrapper>
+        <PostYweetForm />
+    </Wrapper>
     );
 }
