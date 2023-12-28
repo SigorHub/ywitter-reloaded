@@ -68,6 +68,11 @@ export default function PostYweetForm(){
         }
     }
 
+    const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        if(isLoading || yweet === "" || yweet.length > 180) return;
+    }
+
     return (
         <Form>
             <TextArea onChange={onChange} value={yweet} rows={5} maxLength={180} placeholder="무엇 입니까 우연한 사건"/>
