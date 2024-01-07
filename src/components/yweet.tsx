@@ -7,11 +7,12 @@ const Wrapper = styled.div`
     padding: 20px;
     border: 1px solid rgba(255, 255, 255, 0.5);
     border-radius: 15px;
-    margin: 15px;
 `;
 
 const Column = styled.div`
-    
+    &:last-child{
+        place-self: end;
+    }
 `;
 
 const Photo = styled.img`
@@ -37,10 +38,7 @@ export default function Yweet({ username, photo, yweet }: IYweet) {
                 <Username>{username}</Username>
                 <PayLoad>{yweet}</PayLoad>
             </Column>
-            {photo ? (<Column>
-                <Photo src={photo} />
-            </Column>
-            ) : null}
+            <Column>{photo ? <Photo src={photo} /> : null}</Column>
         </Wrapper>
     )
 }
