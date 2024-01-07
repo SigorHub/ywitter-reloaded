@@ -3,19 +3,30 @@ import Layout from "./components/layout";
 import Home from "./routes/home";
 import Profile from "./routes/profile";
 import Login from "./routes/login";
-import CreateAccount from "./routes/create-account";
-import { createGlobalStyle } from "styled-components";
+import CreateAccount from "./create-account";
+import styled, { createGlobalStyle } from "styled-components";
 import reset from "styled-reset";
+import { useEffect, useState } from "react";
+import LoadingScreen from "./components/loading-screen";
+import { auth } from "./routes/firebase";
+import ProtectedRoute from "./components/protected-route";
 
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Layout />,
+    // Layout(Home, Profile)은 ProtectedRoute의 chilren으로 이동 (회원 조회)
+    element:
+      <ProtectedRoute>
+        <Layout />
+      </ProtectedRoute>,
+    // Home과 Profile은 Layout Component 내부에서 render
+    // layout을 내비게이션으로 사용하기 위함
     children: [
       {
         path: "",
-        element: <Home />,
+        element:
+          <Home />,
       },
       {
         path: "profile",
@@ -30,7 +41,7 @@ const router = createBrowserRouter([
   {
     path: "/create-account",
     element: <CreateAccount />,
-  },
+  }
 ]);
 
 const GlobalStyles = createGlobalStyle`
@@ -38,19 +49,35 @@ const GlobalStyles = createGlobalStyle`
   *{
     box-sizing:border-box;
   }
-  body {
-  background-color: black;
-  color: white;
-  font-family: 'system-ui', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-}
+  body{
+    background-color:black;
+    color:white;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  }
+`;
+
+const Wrapper = styled.div`
+  height: 100vh;
+  display: flex;
+  justify-content: center;
 `;
 
 function App() {
+  const [isLoading, setLoading] = useState(true);
+  const init = async () => {
+    // wait for firebase
+    // setTimeout(() => setLoading(false), 2000);
+    await auth.authStateReady();
+    setLoading(false);
+  };
+  useEffect(() => {
+    init();
+  }, []);
   return (
-    <>
+    <Wrapper>
       <GlobalStyles />
-      <RouterProvider router={router} />
-    </>
+      {isLoading ? <LoadingScreen /> : <RouterProvider router={router} />}
+    </Wrapper>
   );
 }
 
