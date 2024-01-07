@@ -2,6 +2,7 @@ import { collection, getDocs, orderBy, query } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { db } from "../routes/firebase";
+import Yweet from "./yweet";
 
 export interface IYweet {
     id: string;
@@ -38,5 +39,9 @@ export default function TimeLine() {
         fetchYweets();
     }, []);
 
-    return <Wrapper>{JSON.stringify(yweets)}</Wrapper>;
+    return <Wrapper>
+        {yweets.map((yweet =>
+            <Yweet key={yweet.id} {...yweet} />
+        ))}
+    </Wrapper>
 }
