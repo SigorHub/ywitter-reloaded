@@ -1,5 +1,7 @@
+import { addDoc, collection } from "firebase/firestore";
 import React, { useState } from "react";
 import styled from "styled-components";
+import { auth, db } from "../routes/firebase";
 
 const Form = styled.form`
     display: flex;
@@ -54,31 +56,46 @@ const SubmitBtn = styled.input`
     }
 `;
 
-export default function PostYweetForm(){
+export default function PostYweetForm() {
     const [isLoading, setLoading] = useState(false);
-    const [yweet,setYweet] = useState("");
-    const [file,setFile] = useState<File | null>(null);
+    const [yweet, setYweet] = useState("");
+    const [file, setFile] = useState<File | null>(null);
     const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         setYweet(e.target.value);
     };
     const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { files } = e.target;
-        if (files && files.length === 1){
+        if (files && files.length === 1) {
             setFile(files[0]);
         }
     }
 
-    const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        if(isLoading || yweet === "" || yweet.length > 180) return;
+        const user = auth.currentUser;
+        if (!user || isLoading || yweet === "" || yweet.length > 180) return;
+
+        try {
+            setLoading(true);
+            await addDoc(collection(db, "yweets"), { // db, 테이블
+                yweet,
+                createdAt: Date.now(),
+                username: user.displayName || "익룡", // 사용자 확인용
+                userId: user.uid,
+            })
+        } catch (e) {
+            console.log(e);
+        } finally {
+            setLoading(false);
+        }
     }
 
     return (
-        <Form>
-            <TextArea onChange={onChange} value={yweet} rows={5} maxLength={180} placeholder="무엇 입니까 우연한 사건"/>
-            <AttachFileButton htmlFor="file">{file ? "사진 추가됨":"추가 사진"}</AttachFileButton>
+        <Form onSubmit={onSubmit}>
+            <TextArea onChange={onChange} value={yweet} rows={5} maxLength={180} placeholder="무엇 입니까 우연한 사건" />
+            <AttachFileButton htmlFor="file">{file ? "사진 추가됨" : "추가 사진"}</AttachFileButton>
             <AttachFileInput onChange={onFileChange} type="file" id="file" accept="image/*" />
-            <SubmitBtn type="submit" value={isLoading ? "게시물 중...":"게시물 Yweet"} />
+            <SubmitBtn type="submit" value={isLoading ? "게시물 중..." : "게시물 Yweet"} />
         </Form>
     );
 }
