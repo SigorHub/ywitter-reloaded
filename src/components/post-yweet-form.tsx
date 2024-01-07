@@ -1,7 +1,8 @@
-import { addDoc, collection } from "firebase/firestore";
+import { addDoc, collection, updateDoc } from "firebase/firestore";
 import React, { useState } from "react";
 import styled from "styled-components";
-import { auth, db } from "../routes/firebase";
+import { auth, db, storage } from "../routes/firebase";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 
 const Form = styled.form`
     display: flex;
@@ -77,12 +78,25 @@ export default function PostYweetForm() {
 
         try {
             setLoading(true);
-            await addDoc(collection(db, "yweets"), { // db, 테이블
+            const doc = await addDoc(collection(db, "yweets"), { // db, 테이블
                 yweet,
                 createdAt: Date.now(),
                 username: user.displayName || "익룡", // 사용자 확인용
                 userId: user.uid,
-            })
+            });
+            // 파일 첨부 firebase storage (경로 : 유저ID-유저Name / 문서ID)
+            if (file) {
+                const locationRef = ref(storage, `yweets/${user.uid}-${user.displayName}/${doc.id}`);
+                const result = await uploadBytes(locationRef, file);
+                const url = await getDownloadURL(result.ref);
+                // yweet문서(doc)에 사진 url 추가
+                await updateDoc(doc, {
+                    photo: url,
+                });
+            }
+            // 게시물 작성 후 초기화
+            setYweet("");
+            setFile(null);
         } catch (e) {
             console.log(e);
         } finally {
@@ -92,7 +106,7 @@ export default function PostYweetForm() {
 
     return (
         <Form onSubmit={onSubmit}>
-            <TextArea onChange={onChange} value={yweet} rows={5} maxLength={180} placeholder="무엇 입니까 우연한 사건" />
+            <TextArea onChange={onChange} value={yweet} rows={5} maxLength={180} placeholder="무엇 입니까 우연한 사건" required />
             <AttachFileButton htmlFor="file">{file ? "사진 추가됨" : "추가 사진"}</AttachFileButton>
             <AttachFileInput onChange={onFileChange} type="file" id="file" accept="image/*" />
             <SubmitBtn type="submit" value={isLoading ? "게시물 중..." : "게시물 Yweet"} />
