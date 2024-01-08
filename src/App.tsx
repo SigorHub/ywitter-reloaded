@@ -22,25 +22,25 @@ const router = createBrowserRouter([
       </ProtectedRoute>,
     // Home과 Profile은 Layout Component 내부에서 render
     // layout을 내비게이션으로 사용하기 위함
-    children:[
+    children: [
       {
-        path:"",
+        path: "",
         element:
-        <Home />,
+          <Home />,
       },
       {
-        path:"profile",
-        element:<Profile />,
+        path: "profile",
+        element: <Profile />,
       },
     ],
   },
   {
-    path:"/login",
-    element:<Login />,
+    path: "/login",
+    element: <Login />,
   },
   {
-    path:"/create-account",
-    element:<CreateAccount />,
+    path: "/create-account",
+    element: <CreateAccount />,
   }
 ]);
 
@@ -64,13 +64,13 @@ const Wrapper = styled.div`
 
 function App() {
   const [isLoading, setLoading] = useState(true);
-  const init = async() => {
+  const init = async () => {
     // wait for firebase
     // setTimeout(() => setLoading(false), 2000);
     await auth.authStateReady();
     setLoading(false);
   };
-  useEffect(()=> {
+  useEffect(() => {
     init();
   }, []);
   return (

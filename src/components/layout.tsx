@@ -39,18 +39,18 @@ const MenuItem = styled.div`
     }
 `;
 
-export default function Layout(){
+export default function Layout() {
     // LogOut 설정
     const navigate = useNavigate();
     const onLogOut = async () => {
         const ok = confirm("당신은 확신하다 당신은 원한다 로그아웃을");
-        if(ok){
+        if (ok) {
             await auth.signOut();
             navigate("/login");
         }
     }
 
-    return(
+    return (
         <Wrapper>
             <Menu>
                 <Link to="/">

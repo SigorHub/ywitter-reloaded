@@ -16,6 +16,6 @@ const app = initializeApp(firebaseConfig);
 // 인증 권한
 export const auth = getAuth(app);
 // 스토리지 권한
-export const stroage = getStorage(app);
+export const storage = getStorage(app);
 // db권한
 export const db = getFirestore(app);
